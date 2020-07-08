@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project Template</title>
+
+        <style type="text/css">
+            body {
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 40em;
+                width: 88%;
+            }
+
+            .accordion-item1::after {
+                content: '1';
+            }
+
+            .accordion-item-control {
+                text-decoration: none;
+                margin-left: 0.5rem;
+                color: #999;
+            }
+
+            .accordion-item-control:active,
+            .accordion-item-control:visited {
+                color: #999;
+            }
+
+            .accordion-item-collapsed + div {
+                display: none;
+            }
+
+            .hidden1 {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Accordion</h1>
+
+        <div class="accordion">
+            <h2>Man-of-War</h2>
+            <div>
+                <p>
+                    Prow clipper capstan grog poop deck. Hands man-of-war
+                    interloper measured fer yer chains no prey, no pay. Spanish
+                    Main dead men tell no tales hands spirits Pieces of Eight.
+                </p>
+            </div>
+
+            <h2>Cutlass</h2>
+            <div>
+                <p>
+                    Yard blow the man down execution dock broadside barque.
+                    Pressgang bilge hang the jib Spanish Main driver. Belay red
+                    ensign cutlass chantey trysail.
+                </p>
+            </div>
+
+            <h2>Pirate Draft</h2>
+            <div>
+                <p>
+                    Main sheet gunwalls tender Admiral of the Black Cat o'nine
+                    tails. Bring a spring upon her cable parrel gangplank pirate
+                    draft. Rutters bilge rat driver ballast swing the lead.
+                </p>
+            </div>
+        </div>
+
+        <script>
+            function Accordion(selector) {
+                const expandedSymbol = '˅';
+                const collapsedSymbol = '˃';
+
+                const container = document.querySelector(selector);
+                if (!container) return;
+
+                const headers = container.querySelectorAll('h2');
+                headers.forEach(initialiseHeader);
+
+                function initialiseHeader(h2) {
+                    addControl(h2);
+                    collapseItem(h2);
+                    h2.addEventListener('click', clickHandler);
+                }
+
+                function clickHandler(e) {
+                    if (e.target.classList.contains('accordion-item-control')) {
+                        toggleItem(e.currentTarget, e.target);
+                    }
+                }
+
+                function addControl(h2) {
+                    h2.insertAdjacentHTML(
+                        'beforeend',
+                        `<a href="javascript:void(0)" class="accordion-item-control" tabindex=1>${expandedSymbol}</a>`
+                    );
+                }
+
+                function collapseItem(h2, el) {
+                    el = el || h2.querySelector('.accordion-item-control');
+
+                    h2.classList.add('accordion-item-collapsed');
+                    el.innerHTML = collapsedSymbol;
+                }
+
+                function expandItem(h2, el) {
+                    h2.classList.remove('accordion-item-collapsed');
+                    el.innerHTML = expandedSymbol;
+                }
+
+                function toggleItem(h2, el) {
+                    if (h2.classList.contains('accordion-item-collapsed')) {
+                        headers.forEach(h => collapseItem(h));
+                        expandItem(h2, el);
+                    } else {
+                        collapseItem(h2, el);
+                    }
+                }
+            }
+
+            Accordion('.accordion');
+        </script>
+    </body>
+</html>
