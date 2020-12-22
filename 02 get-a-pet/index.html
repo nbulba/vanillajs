@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project Template</title>
+
+        <style type="text/css">
+            body {
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 40em;
+                width: 88%;
+            }
+
+            .warning-message {
+                width: 100%;
+                position: sticky;
+                top: 0;
+                height: 2rem;
+                background-color: coral;
+                text-align: center;
+            }
+
+            .hide {
+                display: none;
+            }
+
+            .pet-card {
+                display: flex;
+                margin: .5rem;
+            }
+
+            .pet-name {
+                font-size: 2rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="warning-message hide">Error accessing PetFinder API</div>
+        <h1>Find a Pet</h1>
+
+        <div id="app"></div>
+
+        <script>
+
+            window.onload = GetapetApp;
+
+            function GetapetApp() {
+                const apiKey = '';
+                const apiSecret = '';
+
+                const authUrl = 'https://api.petfinder.com/v2/oauth2/token';
+                const animalsUrl = 'https://api.petfinder.com/v2/animals';
+
+                let accessToken = null;
+
+                loadpetData();
+
+                return;
+
+                authorise()
+                    .then(fetchDogs)
+                    .then(showDogs)
+                    ;
+
+                function showDogs(petData) {
+
+                    const appNode = document.querySelector('#app');
+
+                    for(item of petData.animals) {
+                        const petMarkup = buildPetMarkup(item);
+                        appNode.appendChild(petMarkup);
+                    }
+
+                }
+
+                function loadpetData() {
+                    const task =
+                        fetch('responses/animals-get.json')
+                            .then(handleResponse)
+                            .then(showDogs);
+                }
+
+                function buildPetMarkup(petData) {
+
+                    const template =
+                        document
+                            .querySelector('#template-pet-card')
+
+                            .innerHTML;
+
+                    let markup = document.createElement('div');
+                    markup.innerHTML = template;
+                    markup = markup.children[0];
+
+                    markup.children[0].src = petData.photos[0].small;
+                    markup.children[1].children[0].innerHTML = petData.name;
+                    markup.children[1].children[1].innerHTML = `${petData.age} ${petData.type}`;
+                    markup.children[1].children[2].innerHTML = petData.gender;
+
+                    return markup;
+                }
+
+                const buildAuthHeaders = () => ({
+                    Authorization: `Bearer ${accessToken}`,
+                });
+
+                function handleResponse (response) {
+                    return new Promise((resolve, reject) => {
+                        if (response.ok) {
+                            resolve(response.json());
+                        } else if (response.status === 401) {
+                            reject(new Error(`FAILED request to ${response.url}`));
+                        } else {
+                            reject(new Error(`Unknown error: ${response.status}`));
+                        }});
+                };
+
+                const logError = (error) => console.log(error);
+
+                function fetchDogs(access_token) {
+
+                    const fetchOptions = {
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                        method: 'GET',
+                    };
+
+                    const promise =
+                        fetch(`${animalsUrl}?type=dog`,fetchOptions)
+                            .then(handleResponse);
+
+                    return promise;
+                }
+
+                function authorise() {
+                    const fetchOptions = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `grant_type=client_credentials&client_id=${apiKey}&client_secret=${apiSecret}`,
+                    };
+
+                    const persistAccessToken = (json) =>
+                        new Promise((resolve, reject) => {
+                            accessToken = json.access_token;
+
+                            resolve(accessToken);
+                        });
+
+                    const promise = fetch(authUrl, fetchOptions)
+                        .then(handleResponse)
+                        .then(persistAccessToken)
+                        .catch(showAccessError);
+
+                    return promise;
+                }
+
+                function showAccessError(error) {
+                    var message = document.querySelector('.warning-message');
+                    message.classList.remove('hide');
+
+                    throw error;
+                }
+            }
+        </script>
+
+        <script type="text/html" id='template-pet-card'>
+            <div class="pet-card">
+                <img/>
+                <div>
+                    <div class="pet-name"></div>
+                    <div class="pet-info"></div>
+                    <div class="pet-info"></div>
+                </div>
+            </div>
+        </script>
+    </body>
+</html>

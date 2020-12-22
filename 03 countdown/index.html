@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project Template</title>
+
+        <style type="text/css">
+            body {
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 40em;
+                width: 88%;
+                text-align: center;
+            }
+
+            .hide {
+                display: none;
+            }
+
+            .error {
+                color: red;
+                font-weight: 600;
+                margin-top: 1rem;
+            }
+
+            .countdown {
+                color: cornflowerblue;
+                font-size: 300%;
+                margin: 1rem;
+                font-weight: 800;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Countdown Timer</h1>
+
+        <div id="app">
+            <input type="text" class="btn time-value" />
+            <button type="button" class="btn btn-start">Start</button>
+            <div class="btn countdown hide"></div>
+            <button type="button" class="btn btn-cancel hide">Cancel</button>
+            <div class="error hide">
+                Время должно быть указано в формате мм:сс
+            </div>
+        </div>
+
+        <script>
+            function init() {
+                const timeRegex = /^\d+(:\d{1,2}){0,1}$/g;
+
+                const input = document.querySelector('.time-value');
+                const error = document.querySelector('.error');
+                const countdown = document.querySelector('.countdown');
+                const buttonStart = document.querySelector('.btn-start');
+                const buttonCancel = document.querySelector('.btn-cancel');
+                const buttons = document.querySelectorAll('.btn');
+
+                const toggleHide = () => {
+                    for (let btn of buttons) {
+                        btn.classList.toggle('hide');
+                    }
+                };
+
+                let secondsLeft;
+                let intervalId;
+
+                const startTick = () => {
+                    countdown.innerHTML = secondsLeft;
+                    intervalId = setInterval(() => {
+                        secondsLeft -= 1;
+                        input.value = secondsLeft;
+                        countdown.innerHTML = secondsLeft;
+
+                        if (secondsLeft <= 0) {
+                            clearInterval(intervalId);
+                            input.value = '';
+                            countdown.innerHTML = '';
+                            toggleHide();
+                            alert('Countdown completed');
+                        }
+                    }, 1000);
+                };
+
+                function getSeconds(strValue) {
+                    const splitted = strValue.split(':');
+                    if (splitted.length > 1) {
+                        return +splitted[0] * 60 + +splitted[1];
+                    } else {
+                        return +splitted[0];
+                    }
+                }
+
+                buttonStart.onclick = () => {
+                    const inputValue = input.value;
+                    const matched = inputValue.match(timeRegex);
+
+                    console.log(!matched);
+
+                    if (!matched) {
+                        error.classList.remove('hide');
+
+                        return;
+                    }
+
+                    error.classList.add('hide');
+
+                    secondsLeft = getSeconds(matched[0]);
+
+                    toggleHide();
+                    startTick();
+                };
+
+                buttonCancel.onclick = () => {
+                    clearInterval(intervalId);
+                    toggleHide();
+                };
+            }
+
+            window.onload = init;
+        </script>
+    </body>
+</html>
