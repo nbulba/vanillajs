@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project Template</title>
+
+        <style type="text/css">
+            body {
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 40em;
+                width: 88%;
+            }
+
+            .list-inline {
+                list-style: none;
+                padding: 0;
+            }
+
+            .list-inline li {
+                display: inline;
+                margin-right: .5rem;
+                text-transform: capitalize;
+            }
+
+            .hide {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Playlist Filters</h1>
+
+        <!-- Add filters here -->
+        <ul id="filters" class="list-inline"></ul>
+        <label><input type="checkbox" class="grammy-checkbox" checked>Nominated to Grammy</label>
+        <ol id="playlist">
+            <li data-genre="pop" data-grammy="yes">
+                "Thank U, Next" by Arianna Grande
+            </li>
+            <li data-genre="hip-hop" data-grammy="yes">
+                "Sicko Mode" by Travis Scott
+            </li>
+            <li data-genre="rock" data-grammy="yes">
+                "High Hopes" by Panic! at the Disco
+            </li>
+            <li data-genre="pop" data-grammy="no">
+                "Girls Like You" by Maroon 5
+            </li>
+            <li data-genre="hip-hop" data-grammy="no">"Wow." by Post Malone</li>
+            <li data-genre="hip-hop" data-grammy="no">
+                "Better Now" by Post Malone
+            </li>
+            <li data-genre="hip-hop" data-grammy="no">"Money" by Cardi B</li>
+            <li data-genre="hip-hop" data-grammy="no">
+                "Going Bad" by Meek Mill
+            </li>
+            <li data-genre="pop" data-grammy="yes">"Shallow" by Lady Gaga</li>
+            <li data-genre="rock" data-grammy="no">
+                "Natural" by Imagine Dragons
+            </li>
+            <li data-genre="electronic" data-grammy="no">
+                "Close to Me" by Ellie Goulding
+            </li>
+            <li data-genre="country" data-grammy="yes">
+                "She Got The Best Of Me" by Luke Combs
+            </li>
+            <li data-genre="hip-hop" data-grammy="no">"A Lot" by 21 Savage</li>
+            <li data-genre="country" data-grammy="yes">
+                "Beautiful Crazy" by Luke Combs
+            </li>
+            <li data-genre="country" data-grammy="no">
+                "Burning Man" by Dierks Bentley
+            </li>
+            <li data-genre="hip-hop" data-grammy="no">
+                "Backin' It Up" by Pardison Fontaine
+            </li>
+            <li data-genre="country" data-grammy="yes">
+                "Girl Like You" by Jason Aldean
+            </li>
+            <li data-genre="pop" data-grammy="no">
+                "Consequences" by Camila Cabello
+            </li>
+            <li data-genre="hip-hop" data-grammy="yes">
+                "Talk To Me" by Tory Lanez
+            </li>
+            <li data-genre="hip-hop" data-grammy="yes">
+                "No Stylist" by French Montana
+            </li>
+            <li data-genre="hip-hop" data-grammy="yes">
+                "Yosemite" by Travis Scott
+            </li>
+            <li data-genre="rock" data-grammy="no">
+                "Bad Liar" by Imagine Dragons
+            </li>
+            <li data-genre="rock" data-grammy="no">"Get Up" by Shinedown</li>
+            <li data-genre="pop" data-grammy="yes">"Without Me" by Halsey</li>
+        </ol>
+
+        <script>
+            // Project code...
+
+            function init() {
+
+                const DATA_GENRE_ATTRIBUTE_NAME = 'data-genre';
+                const playlistItems = document.querySelectorAll(`#playlist li[${DATA_GENRE_ATTRIBUTE_NAME}]`);
+                const grammyTick = document.querySelector('.grammy-checkbox');
+
+                function getUniqueGenres() {
+
+                    const allGenres = [...playlistItems].map(i => i.getAttribute(DATA_GENRE_ATTRIBUTE_NAME));
+                    const uniqueGenres = [...new Set(allGenres)];
+
+                    return uniqueGenres;
+                }
+
+                function initFilters(genres) {
+                    const filtersContainer = document.querySelector('#filters');
+                    let id = 0;
+                    for(let genre of genres) {
+
+                        let li = document.createElement('li');
+                        let checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `checkbox_${++id}`;
+                        checkbox.name = checkbox.id;
+                        checkbox.checked = true;
+                        checkbox.classList.add('filter-checkbox');
+                        checkbox.setAttribute(DATA_GENRE_ATTRIBUTE_NAME, genre);
+
+                        let checkboxLabel = document.createElement('label');
+                        checkboxLabel.innerHTML = genre;
+                        checkboxLabel.htmlFor = checkbox.id;
+
+                        filtersContainer.appendChild(li);
+                        li.appendChild(checkbox);
+                        li.appendChild(checkboxLabel);
+                    }
+                }
+
+                function filterSongs(e) {
+                    if (!e.target.classList.contains('filter-checkbox') && e.target !== grammyTick) return;
+
+                    filterAll();
+                }
+
+                function filterAll() {
+                    const showGrammyValue = grammyTick.checked ? 'yes' : 'no';
+                    const allowedGenres =
+                        [...document.querySelectorAll('.filter-checkbox')]
+                            .filter(i => i.checked)
+                            .map(i => i.getAttribute(DATA_GENRE_ATTRIBUTE_NAME))
+                            ;
+
+                    for(let li of playlistItems) {
+                        const showItem =
+                            allowedGenres.includes(li.getAttribute(DATA_GENRE_ATTRIBUTE_NAME))
+                            && li.getAttribute('data-grammy') === showGrammyValue;
+
+                        li.classList.toggle('hide', !showItem);
+                    }
+                }
+
+                var genres = getUniqueGenres();
+                initFilters(genres);
+
+                document.onchange = filterSongs;
+
+                filterAll();
+            }
+
+            window.onload = init;
+        </script>
+    </body>
+</html>
