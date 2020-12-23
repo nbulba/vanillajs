@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Project Template</title>
+
+	<style type="text/css">
+		body {
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		label,
+		input,
+		textarea {
+			width: 100%;
+		}
+
+		label {
+			font-weight: bold;
+		}
+
+		input,
+		textarea {
+			margin-bottom: 2em;
+		}
+
+		textarea {
+			height: 12em;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Form Saver</h1>
+
+	<form id="autosave">
+		<div>
+			<label for="name">Name</label>
+			<input type="text" id="name">
+		</div>
+
+		<div>
+			<label for="email">Email Address</label>
+			<input type="email" id="email">
+		</div>
+
+		<div>
+			<label for="notes">Notes</label>
+			<textarea id="notes"></textarea>
+		</div>
+
+		<button>Submit</button>
+	</form>
+
+
+	<script>
+		function init(){
+            const formFields = [...document.querySelectorAll('#autosave input, #autosave textarea')];
+
+            function restoreValues() {
+                for(let i = 0; i < window.localStorage.length; ++i) {
+                    const id = window.localStorage.key(i);
+                    const value = window.localStorage.getItem(id);
+
+                    const element = document.querySelector(`#autosave #${id}`);
+                    if (element) {
+                        element.value = value;
+                    }
+                }
+            }
+
+            function persistData(name, value) {
+                window.localStorage.setItem(name, value);
+            }
+
+            function handleChange(e) {
+                if (!formFields.includes(e.target)) return;
+
+                persistData(e.target.id, e.target.value);
+            }
+
+            restoreValues();
+            document.addEventListener('change', handleChange);
+
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+	</script>
+
+</body>
+</html>
