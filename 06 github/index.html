@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Project Template</title>
+
+	<style type="text/css">
+		body {
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 40em;
+			width: 88%;
+            box-sizing: border-box;
+		}
+
+        .hide {
+                display: none;
+        }
+
+        .description-text {
+            margin-bottom: 1rem;
+        }
+
+        .repo-card {
+            margin: .5rem;
+            padding: .5rem;
+            border: 1px solid #bdbde4;
+        }
+        .repo-card:hover {
+            border: 1px solid blue;
+        }
+        .repo-name {
+            font-weight: 800;
+            font-size: 2rem;
+        }
+	</style>
+</head>
+<body>
+
+	<h1>GitHub Repos</h1>
+
+	<div id="app">
+        <div class="description-text">Please type in user name and click Show button</div>
+	    <div>
+            <input class="user-name" type="text" placeholder="Username">
+            <input class="btn-show" type="button" value="Show">
+        </div>
+        <div class="repos hide"></div>
+    </div>
+
+
+	<script>
+		function init() {
+
+            const btnShow = document.querySelector('.btn-show');
+            const userNameInput = document.querySelector('.user-name');
+            const reposContainer = document.querySelector('.repos');
+
+            function buildRepoMarkup(repo) {
+
+                    const template =
+                        document
+                            .querySelector('#template-repo')
+                            .innerHTML;
+
+                    let markup = document.createElement('div');
+                    markup.innerHTML = template;
+                    markup = markup.children[0];
+
+                    markup.children[0].innerHTML = repo.name;
+                    markup.children[1].innerHTML = repo.description;
+
+                    return markup;
+                }
+
+            function handleResponse (response) {
+                    return new Promise((resolve, reject) => {
+                        if (response.ok) {
+
+                            const remaining = response.headers.get('X-RateLimit-Remaining');
+                            alert(`Remaining call count: ${remaining}`);
+
+                            resolve(response.json());
+                        } else if (response.status === 404) {
+                            reject(new Error(`User not found`));
+                        } else if (response.status === 401) {
+                            reject(new Error(`FAILED request to ${response.url}`));
+                        } else {
+                            reject(new Error(`Unknown error: ${response.status}`));
+                        }});
+                };
+
+            const loadUserRepos = (userName) =>
+                //fetch('responses/repos.json')
+                fetch(`https://api.github.com/users/${userName}/repos`)
+                    .then(handleResponse)
+                    .catch((error) => {
+                        alert(error);
+                    });
+
+            function renderRepos(userRepos) {
+                reposContainer.classList.remove('hide');
+                for(let repo of userRepos) {
+                    const repoMarkup = buildRepoMarkup(repo);
+                    reposContainer.appendChild(repoMarkup);
+                }
+            }
+
+            function showUserRepos() {
+                const userName = userNameInput.value;
+                if (!userName) {
+                    alert('User name must not be blank');
+                    return;
+                }
+
+                reposContainer.classList.toggle('hide', true);
+                reposContainer.innerHTML = '';
+
+                loadUserRepos(userName)
+                .then(renderRepos);
+            }
+
+            function setupHandlers() {
+                const btnShow = document.querySelector('.btn-show');
+
+                btnShow.addEventListener('click', showUserRepos)
+            }
+
+            setupHandlers();
+        }
+
+        document.addEventListener('DOMContentLoaded', init)
+    </script>
+
+    <script type="text/html" id='template-repo'>
+        <div class="repo-card">
+            <div class="repo-name"></div>
+            <div class="repo-description"></div>
+        </div>
+    </script>
+
+</body>
+</html>
