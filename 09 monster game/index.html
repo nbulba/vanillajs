@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Project Template</title>
+
+	<style type="text/css">
+		body {
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+        .game-cell {
+            background-color: beige;
+            border: .125rem solid #444;
+            margin: .5rem;
+            width: 15%;
+        }
+
+        .game-cell-active {
+            cursor: pointer;
+        }
+
+        .game-cell-active:hover {
+            border: .125rem solid coral;
+        }
+
+        .game-board {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-board-row {
+            display: flex;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        .game-over {
+            z-index: 100;
+            background-color: rgba(68, 68, 68, .9);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            justify-content: center;
+            display: flex;
+        }
+
+        .game-over-container {
+            background-color: #fff;
+            color: #000;
+            width: 100%;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .game-over-message {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .btn-replay {
+            margin: .25rem;
+        }
+	</style>
+</head>
+<body>
+
+	<h1>Monsters!</h1>
+
+	<p>Click on a door to find your monster friends. Avoid the sock!</p>
+
+	<div id="app">
+    </div>
+
+	<footer class="padding-top">
+		<p class="text-small text-muted">Icons by <a href="https://thenounproject.com/term/door/311732/">Jamie Dickinson</a>, <a href="https://thenounproject.com/term/monster/184225/">Nicky Knicky</a>, <a href="https://thenounproject.com/term/monster/1510400/">Alvaro Cabrera</a>, <a href="https://thenounproject.com/term/monster/28460/">Eliricon</a>, <a href="https://thenounproject.com/term/monster/82823/">April Yang</a>, <a href="https://thenounproject.com/term/monster/1062009/">tk66</a>, <a href="https://thenounproject.com/term/monster/24990/">Alex WaZa</a>, <a href="https://thenounproject.com/term/monster/37212/">Husein Aziz</a>, and <a href="https://thenounproject.com/term/socks/38451/">Yazmin Alanis</a>.</p>
+	</footer>
+
+    <div class="game-over hide">
+        <div class="game-over-container">
+            <div class="game-over-message game-won hide">Congrats! You won.</div>
+            <div class="game-over-message game-lost hide">Oh boy, you lost this one.</div>
+            <div>Play again?</div>
+            <div>
+                <button class="btn-replay btn-yes">Yes</button>
+                <button class="btn-replay btn-no">No</button>
+            </div>
+        </div>
+    </div>
+
+	<script>
+		function init() {
+            const attributeNames = {
+                sock: 'data-sock',
+                src: 'data-src'
+            };
+            const sock = 'sock!';
+            let monsters;
+
+            const gameOver = document.querySelector('.game-over');
+            const gameOverMessages = document.querySelectorAll('.game-over-message');
+
+            const handleGameOver = (gameResult) => {
+                for(msg of gameOverMessages) {
+                    msg.classList.toggle('hide', !msg.classList.contains(`game-${gameResult}`));
+                }
+                gameOver.classList.remove('hide');
+            }
+            const handleLoose = () => handleGameOver('lost');
+            const handleWin = () => handleGameOver('won');
+            const handleClick = (e) => {
+                if (e.target.classList.contains('game-cell-active')) {
+                    handleCellClick.call(e.target, e);
+                } else if (e.target.classList.contains('btn-replay')) {
+                    handleReplayClick.call(e.target, e);
+                }
+            }
+            const handleCellClick = (e) => {
+                const cell = e.target;
+                const isSock = cell.getAttribute(attributeNames.sock);
+                if (isSock) {
+                    handleLoose();
+                    return;
+                }
+
+                const newSrc = cell.getAttribute(attributeNames.src);
+                cell.src = newSrc;
+                cell.classList.remove('game-cell-active');
+
+                monsters = monsters.filter(x => x !== newSrc);
+                if (monsters.length === 1) {
+                    handleWin();
+                }
+            }
+            const handleReplayClick = (e) => {
+                const btn = e.target;
+
+                if (btn.classList.contains('btn-yes')) {
+                    initGameBoard();
+                } else {
+                    const cells = document.querySelectorAll('.game-cell-active');
+                    for(let cell of cells) {
+                        cell.classList.remove('game-cell-active');
+                    }
+                }
+
+                gameOver.classList.add('hide');
+                const messages = document.querySelectorAll('.game-over-message');
+                    for(let message of messages) {
+                        message.classList.toggle('hide', true);
+                    }
+            }
+            const generateMonsters = () => {
+                const monsters =
+                    [...Array(12).keys()]
+                        .splice(1)
+                        .map(x => `img/monster${x}.svg`);
+                monsters.push(sock);
+                monsters.sort((lhs, rhs) => Math.random() < 0.5 ? -1 : 1);
+
+                return monsters;
+            }
+            const initGameBoard = () => {
+                const app = document.querySelector('#app');
+
+                app.innerHTML = '';
+
+                const board = document.createElement('div');
+                board.classList.add('game-board');
+
+                monsters = generateMonsters();
+
+                let boardRow;
+                for(let index = 0; index < monsters.length; ++index) {
+                    if (index % 3 === 0) {
+                        boardRow = document.createElement('div');
+                        boardRow.classList.add('game-board-row');
+
+                        board.appendChild(boardRow);
+                    }
+
+                    const cell = document.createElement('img');
+                    cell.src = 'img/door.svg';
+                    cell.classList.add('game-cell', 'game-cell-active');
+                    const image = monsters[index];
+
+                    if (image === sock) {
+                        cell.setAttribute(attributeNames.sock, null);
+                    } else {
+                        cell.setAttribute(attributeNames.src, image);
+                    }
+                    boardRow.appendChild(cell);
+                }
+                app.appendChild(board);
+            }
+
+            document.addEventListener('click', handleClick);
+
+            initGameBoard();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+	</script>
+
+</body>
+</html>
