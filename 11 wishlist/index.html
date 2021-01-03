@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project Template</title>
+
+        <style type="text/css">
+            body {
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 40em;
+                width: 88%;
+            }
+            .wishlist-form {
+                display: flex;
+                justify-content: left;
+                flex-direction: row;
+                margin-bottom: 1rem;
+            }
+            .wishlist-form > *:not(:first-child) {
+                margin-left: 1rem;
+            }
+            .btn {
+                margin: 0.125rem;
+            }
+            .field-group > * {
+                margin: 0.25rem;
+            }
+            .field-group-name {
+                font-weight: 800;
+                font-size: large;
+            }
+            .wishlist {
+                width: 50%;
+            }
+            .random {
+                text-align: center;
+            }
+            .btn-pick {
+                padding: 2rem;
+                background-color: #e0fda9;
+                border-style: none;
+            }
+            .btn-pick:hover {
+                background-color: #b8ff35;
+            }
+            button[disabled] {
+                color: #aaa;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Randomize</h1>
+
+        <div id="app">
+            <div class="wishlist-form">
+                    <select size="6" class="wishlist">
+                    </select>
+                <div class="field-group">
+                    <div class="field-group-name">Edit item</div>
+                    <div>
+                        <label>
+                            Item description
+                            <input
+                                type="text"
+                                class="item-name"
+                                id="item-name"
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <button class="btn btn-delete" disabled>Delete item</button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-add">Add new item</button>
+            </div>
+            <div class="random">
+                <button class="btn btn-pick">Pick random item</button>
+            </div>
+        </div>
+
+        <script>
+            function init() {
+                const wishlist = document.querySelector('.wishlist');
+                const itemName = document.querySelector('.item-name');
+                const buttonPick = document.querySelector('.btn-pick');
+                const buttonAdd = document.querySelector('.btn-add');
+                const buttonDelete = document.querySelector('.btn-delete');
+                let lastPickedValue = null;
+
+                const getRandomItemValue = () =>
+                    1 + Math.floor(Math.random() * (wishlist.children.length));
+
+                const getNonRepeatingRandomItemValue = () => {
+                    let randomValue;
+                    do {
+                        randomValue = getRandomItemValue();
+                    }
+                    while(randomValue === lastPickedValue);
+                    lastPickedValue = randomValue;
+
+                    return randomValue;
+                }
+
+                    const pickRandomItem = () => {
+
+                    if (wishlist.children.length === 0) {
+                        alert('Please add wish list items first');
+                        return;
+                    }
+
+                    let option;
+                    if (wishlist.children.length === 1) {
+                        option = wishlist.children[0];
+                    } else {
+                        let randomValue = getNonRepeatingRandomItemValue();
+
+                        for(let child of wishlist.children) {
+                            if (child.value == randomValue) {
+                                option = child;
+                            }
+                        }
+                    }
+
+                    if (option) {
+                        alert(option.innerHTML);
+                    }
+                };
+                const addItem = () => {
+                    const option = document.createElement('option');
+                    option.value = wishlist.children.length + 1;
+                    option.innerHTML = 'New item ' + option.value;
+                    wishlist.focus();
+                    wishlist.appendChild(option);
+                    wishlist.value = option.value;
+                    showItemForEdit();
+                };
+                const getSelectedItem = () => {
+                    for(let child of wishlist.children) {
+                        if (child.value == wishlist.value) {
+                            return child;
+                        }
+                    }
+                };
+                const showItemForEdit = () => {
+                    const item = getSelectedItem();
+                    itemName.value = item.innerHTML;
+                    buttonDelete.removeAttribute('disabled');
+                };
+                const updateItem = () => {
+                    const item = getSelectedItem();
+                    item.innerHTML = itemName.value;
+                };
+                const deleteItem = () => {
+                    const item = getSelectedItem();
+                    item.remove();
+                    itemName.value = '';
+
+                    buttonDelete.setAttribute('disabled', 'disabled');
+                };
+
+                buttonPick.addEventListener('click', pickRandomItem);
+                buttonAdd.addEventListener('click', addItem);
+                wishlist.addEventListener('change', showItemForEdit);
+                itemName.addEventListener('keyup', updateItem);
+                itemName.addEventListener('change', updateItem);
+                buttonDelete.addEventListener('click', deleteItem);
+            }
+
+            document.addEventListener('DOMContentLoaded', init);
+        </script>
+    </body>
+</html>
