@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Project Template</title>
+
+	<style type="text/css">
+		body {
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 40em;
+			width: 88%;
+		}
+        .form-field {
+            margin: .5rem 0;
+        }
+	</style>
+</head>
+<body>
+
+	<h1>Password Visibility</h1>
+
+	<form>
+		<div class="form-field">
+			<label for="username">Username</label><br>
+			<input type="text" name="username" id="username">
+		</div>
+		<div class="form-field">
+			<label for="password">Password</label><br>
+			<input type="password" name="password" id="password">
+        </div>
+		<div class="form-field">
+			<label for="password">Another Password</label><br>
+			<input type="password" name="password" id="password">
+        </div>
+		<div class="form-field">
+            <a href="javascript:void(0)" class="action-show">Show passwords</a>
+        </div>
+		<div class="form-field">
+            <button>Submit</button>
+        </div>
+	</form>
+
+	<script>
+		function init() {
+            const passwordFields = document.querySelectorAll('input[type="password"]');
+
+            const showPassword = ()  => {
+                for(let field of passwordFields) {
+                    field.type = 'text';
+                }
+            }
+
+            const hidePassword = ()  => {
+                for(let field of passwordFields) {
+                    field.type = 'password';
+                }
+            }
+
+            const showLink = document.querySelector('.action-show');
+            showLink.addEventListener('mousedown', showPassword);
+            showLink.addEventListener('mouseup', hidePassword);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+	</script>
+
+</body>
+</html>
