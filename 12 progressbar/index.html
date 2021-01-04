@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Project Template</title>
+
+	<style type="text/css">
+		body {
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		label,
+		input,
+		textarea {
+			width: 100%;
+		}
+
+		label {
+			font-weight: bold;
+		}
+
+		input,
+		textarea {
+			margin-bottom: 2em;
+		}
+
+		textarea {
+			height: 12em;
+		}
+
+        .progress-bar {
+            height: .5rem;
+            border: 1px solid #555;
+            width: 100%;
+            margin-bottom: 2em;
+        }
+        .progress-bar-inner {
+            background-color: #30b424;
+            height: 100%;
+            width: 50%;
+        }
+	</style>
+</head>
+<body>
+
+	<h1>Progress Bar</h1>
+
+	<!-- Show form progress here -->
+	<div id="progress" class="progress-bar">
+        <div class="progress-bar-inner"></div>
+    </div>
+
+	<form id="autosave">
+		<div>
+			<label for="name">Name</label>
+			<input type="text" id="name" pattern="[a-zA-Z]+[a-zA-Z-' ]+" required>
+		</div>
+
+		<div>
+			<label for="email">Email Address</label>
+			<input type="email" id="email" required>
+		</div>
+
+		<div>
+			<label for="phone">Phone</label>
+			<input type="tel" id="phone" required>
+		</div>
+
+		<div>
+			<label for="website">Website</label>
+			<input type="url" id="website" required>
+		</div>
+
+		<div>
+			<label for="notes">Notes</label>
+			<textarea id="notes" minlength="2" required></textarea>
+		</div>
+
+		<button>Submit</button>
+	</form>
+
+
+	<script>
+		function init() {
+            const progressBar = document.querySelector('.progress-bar-inner');
+
+            const fields = document.querySelectorAll('input, textarea');
+
+            const showProgress = () => {
+                const completedFields =
+                    [...fields]
+                        .filter(field => field.getAttribute('data-complete') === '');
+
+                const totalFieldsCount = fields.length;
+                const completedFieldCount = completedFields.length;
+                const percentDone = Math.floor(completedFieldCount / totalFieldsCount * 100);
+                progressBar.style.width = percentDone + '%';
+            }
+
+            const checkIfFieldComplete = (field) => {
+                let isDone = field.value && field.checkValidity();
+
+                if (isDone) {
+                    field.setAttribute('data-complete', '');
+                } else {
+                    field.removeAttribute('data-complete');
+                }
+
+                showProgress();
+            }
+
+            const handleFieldUpdate = (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    checkIfFieldComplete(e.target);
+                }
+            }
+
+            document.addEventListener('change', handleFieldUpdate);
+            document.addEventListener('keyup', handleFieldUpdate);
+            showProgress();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+	</script>
+
+</body>
+</html>
