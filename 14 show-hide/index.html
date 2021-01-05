@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Project Template</title>
+
+	<style type="text/css">
+		body {
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+        .control {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .hide {
+            display: none;
+        }
+	</style>
+</head>
+<body>
+
+	<div class="pirate-speak">
+		Hands Letter of Marque chantey man-of-war spanker. Barbary Coast take a caulk rutters cog line. Splice the main brace chantey port parrel careen.
+    </div>
+
+    <div class="control">
+        <button class="btn">Toggle</button>
+    </div>
+
+	<script>
+        function init() {
+
+            const element = document.querySelector('.pirate-speak');
+            const btn = document.querySelector('.btn');
+
+            const toggle = () => {
+                const isHidden = element.classList.toggle('hide');
+                if (isHidden) {
+                    element.setAttribute('aria-hidden', 'true');
+                } else {
+                    element.removeAttribute('aria-hidden');
+                }
+            }
+
+            btn.addEventListener('click', toggle);
+        }
+
+		document.addEventListener('DOMContentLoaded', init);
+	</script>
+
+</body>
+</html>
