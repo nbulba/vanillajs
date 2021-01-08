@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Project Template</title>
+
+	<style type="text/css">
+		body {
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 40em;
+			width: 88%;
+		}
+        .hide {
+            display: none;
+        }
+        .tabs {
+                list-style: none;
+                padding: 0;
+        }
+        .tabs li {
+            display: inline;
+            margin-right: .5rem;
+            text-transform: capitalize;
+        }
+	</style>
+</head>
+<body>
+
+	<h1>Toggle Tabs</h1>
+
+	<ul class="tabs">
+		<li><a href="#anchors-away" class="tab-control">Anchor's Away!</a></li>
+		<li><a href="#man-o-war" class="tab-control">Man O' War</a></li>
+		<li><a href="#corsair" class="tab-control">Corsair</a></li>
+	</ul>
+
+	<div id="anchors-away" class="tab-content hide">
+		<h2>Anchor's Away!</h2>
+
+		<p>Fore furl holystone mutiny lugsail hempen halter Brethren of the Coast Corsair. Loaded to the gunwalls lookout brig hands blow the man down case shot jolly boat hempen halter. Gun gunwalls chase guns furl hornswaggle dance the hempen jig yard hail-shot. Pressgang quarterdeck prow lugger spanker fluke broadside reef.</p>
+
+		<p>Hempen halter me gangplank snow smartly boom fire ship aft. Rope's end draught interloper schooner ho wench jury mast lateen sail. Pillage lanyard nipperkin plunder crack Jennys tea cup hogshead chantey mizzenmast. Spanker blow the man down Buccaneer Sail ho rum tender warp brigantine.</p>
+	</div>
+
+	<div id="man-o-war" class="tab-content hide">
+		<h2>Man O' War</h2>
+
+		<p>Man-of-war booty brigantine fire ship tack no prey, no pay wherry lee. Reef heave to line chandler fore cable smartly me. Avast list spanker Arr fathom American Main lookout grapple. Jolly boat black spot chandler list chantey pinnace brig Yellow Jack.</p>
+
+		<p>Chantey Davy Jones' Locker snow jib careen galleon Admiral of the Black lass. Rum booty heave to grog hempen halter gangway long clothes wherry. Mutiny chase Sea Legs grapple crow's nest wherry jury mast lateen sail. Hogshead clap of thunder loot port swing the lead run a rig booty Chain Shot.</p>
+	</div>
+
+	<div id="corsair" class="tab-content hide">
+		<h2>Corsair</h2>
+
+		<p>Line Corsair haul wind pink provost hardtack keelhaul hang the jib. Splice the main brace matey hornswaggle strike colors run a shot across the bow cackle fruit hang the jib jack. Sheet bounty wherry nipperkin belay flogging Chain Shot main sheet. Lad Spanish Main barque port smartly Chain Shot deadlights Jack Ketch.</p>
+
+		<p>Flogging heave down sloop me squiffy barkadeer loot chantey. Ye spike port lugsail belaying pin nipperkin loot yardarm. Prow gangplank six pounders chase guns pressgang chandler Shiver me timbers piracy. Hearties Shiver me timbers sloop driver fire in the hole gaff prow gally.</p>
+	</div>
+
+
+	<script>
+        function init() {
+
+            const getRelativeLink = (absoluteUrl) => {
+                const index = absoluteUrl.indexOf('#', -1);
+                return absoluteUrl.substr(index);
+            }
+
+            const hideTabFor = (anchor) => {
+                const tab = document.querySelector(getRelativeLink(anchor.href));
+                if (tab) {
+                    tab.classList.toggle('hide', true);
+                }
+
+                anchor.removeAttribute('data-active');
+            }
+
+            const showTabFor = (anchor) => {
+                const tabs = document.querySelectorAll('.tab-content');
+                for(let tab of tabs) {
+                    tab.classList.toggle('hide', true);
+                }
+
+                const tab = document.querySelector(getRelativeLink(anchor.href));
+                if (tab) {
+                    tab.classList.toggle('hide', false);
+                }
+
+                const controls = document.querySelectorAll('.tab-control');
+                for(let tab of controls) {
+                    tab.removeAttribute('data-active');
+                }
+                anchor.setAttribute('data-active', '');
+            }
+
+            const handleTabControlClick = (e) => {
+                e.preventDefault();
+
+                const anchor = e.target;
+                if (anchor.hasAttribute('data-active')) {
+                    hideTabFor(anchor);
+                } else {
+                    showTabFor(anchor);
+                }
+            }
+
+            const handleClick = (e) => {
+                if (e.target.classList.contains('tab-control')) {
+                    handleTabControlClick(e);
+                }
+            }
+
+            document.addEventListener('click', handleClick);
+        }
+
+		document.addEventListener('DOMContentLoaded', init);
+	</script>
+
+</body>
+</html>
